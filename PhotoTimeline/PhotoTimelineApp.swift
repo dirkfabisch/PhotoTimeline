@@ -2,6 +2,8 @@ import SwiftUI
 
 @main
 struct PhotoTimelineApp: App {
+    @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
+
     var body: some Scene {
         DocumentGroup(newDocument: { TimelineDocument() }) { file in
             ContentView(document: file.document)
