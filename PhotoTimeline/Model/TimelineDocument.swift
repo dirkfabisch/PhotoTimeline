@@ -14,14 +14,19 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
     nonisolated static var readableContentTypes: [UTType] { [.photoTimeline] }
 
     @Published var photos: [PhotoRef] {
-        didSet { saved.withLock { [photos] in $0 = photos } }
+        didSet { updateSaved() }
     }
-    private let saved: Mutex<[PhotoRef]>
+    @Published private(set) var granularity: DateGranularity {
+        didSet { updateSaved() }
+    }
+    private let saved: Mutex<FileFormat>
     let bookmarks = BookmarkStore()
 
     init() {
-        saved = Mutex([])
+        let granularity = DateGranularity.standard
+        saved = Mutex(FileFormat(photos: [], granularity: granularity))
         photos = []
+        self.granularity = granularity
     }
 
     nonisolated init(configuration: ReadConfiguration) throws {
@@ -30,25 +35,33 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
         }
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        let photos = try decoder.decode(FileFormat.self, from: data).photos
-        saved = Mutex(photos)
-        _photos = Published(initialValue: photos)
+        var file = try decoder.decode(FileFormat.self, from: data)
+        file.granularity = file.granularity ?? DateGranularity.standard
+        saved = Mutex(file)
+        _photos = Published(initialValue: file.photos)
+        _granularity = Published(initialValue: file.granularity ?? .all)
     }
 
-    nonisolated func snapshot(contentType: UTType) throws -> [PhotoRef] {
+    nonisolated func snapshot(contentType: UTType) throws -> FileFormat {
         saved.withLock { $0 }
     }
 
-    nonisolated func fileWrapper(snapshot: [PhotoRef], configuration: WriteConfiguration) throws -> FileWrapper {
+    nonisolated func fileWrapper(snapshot: FileFormat, configuration: WriteConfiguration) throws -> FileWrapper {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         encoder.dateEncodingStrategy = .iso8601
-        return FileWrapper(regularFileWithContents: try encoder.encode(FileFormat(photos: snapshot)))
+        return FileWrapper(regularFileWithContents: try encoder.encode(snapshot))
     }
 
-    private nonisolated struct FileFormat: Codable {
+    nonisolated struct FileFormat: Codable, Sendable {
         var version = 1
         var photos: [PhotoRef]
+        /// Optional so files from before the setting existed still load.
+        var granularity: DateGranularity?
+    }
+
+    private func updateSaved() {
+        saved.withLock { [photos, granularity] in $0 = FileFormat(photos: photos, granularity: granularity) }
     }
 
     // MARK: Access
@@ -106,19 +119,74 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
         }
     }
 
-    /// Writes the new date into the file (EXIF + file dates). Undo writes the old one back.
     @MainActor
-    func setCaptureDate(_ date: Date, for id: UUID, undoManager: UndoManager?) throws {
-        guard let i = photos.firstIndex(where: { $0.id == id }) else { return }
-        guard let url = url(for: photos[i]) else { throw CocoaError(.fileNoSuchFile) }
-        let old = photos[i].captureDate
-        try MetadataWriter.setCaptureDate(date, of: url)
-        photos[i].captureDate = date
-        photos[i].dateSource = .exif
+    func setGranularity(_ value: DateGranularity, undoManager: UndoManager?) {
+        let old = granularity
+        guard value != old else { return }
+        granularity = value
         undoManager?.registerUndo(withTarget: self) { doc in
-            MainActor.assumeIsolated { try? doc.setCaptureDate(old, for: id, undoManager: undoManager) }
+            MainActor.assumeIsolated { doc.setGranularity(old, undoManager: undoManager) }
+        }
+        undoManager?.setActionName("Granularität ändern")
+    }
+
+    /// Changes the date on the timeline only; the image file is untouched until `writePendingDates`.
+    @MainActor
+    func setCaptureDate(_ date: Date, for id: UUID, undoManager: UndoManager?) {
+        guard let i = photos.firstIndex(where: { $0.id == id }), photos[i].captureDate != date else { return }
+        var photo = photos[i]
+        let old = photo.captureDate
+        photo.fileDate = photo.dateInFile
+        photo.captureDate = date
+        photos[i] = photo
+        undoManager?.registerUndo(withTarget: self) { doc in
+            MainActor.assumeIsolated { doc.setCaptureDate(old, for: id, undoManager: undoManager) }
         }
         undoManager?.setActionName("Aufnahmedatum ändern")
+    }
+
+    /// Resets every pending date to what the file holds.
+    @MainActor
+    func discardPendingDates(undoManager: UndoManager?) {
+        for photo in photos where photo.hasPendingDate {
+            setCaptureDate(photo.dateInFile, for: photo.id, undoManager: undoManager)
+        }
+        undoManager?.setActionName("Änderungen verwerfen")
+    }
+
+    /// Writes all pending dates into the image files (EXIF + file dates) in one go.
+    /// Undo writes the previous dates back. Returns a message per file that failed; those stay pending.
+    @MainActor
+    func writePendingDates(undoManager: UndoManager?) -> [String] {
+        let dates = photos.filter(\.hasPendingDate).map { ($0.id, $0.captureDate) }
+        let failures = writeFileDates(dates, undoManager: undoManager)
+        undoManager?.setActionName("In Fotos schreiben")
+        return failures
+    }
+
+    @MainActor
+    private func writeFileDates(_ dates: [(UUID, Date)], undoManager: UndoManager?) -> [String] {
+        var previous: [(UUID, Date)] = []
+        var failures: [String] = []
+        for (id, date) in dates {
+            guard let i = photos.firstIndex(where: { $0.id == id }) else { continue }
+            let photo = photos[i]
+            do {
+                guard let url = url(for: photo) else { throw CocoaError(.fileNoSuchFile) }
+                try MetadataWriter.setCaptureDate(date, of: url)
+                previous.append((id, photo.dateInFile))
+                photos[i].fileDate = date
+                photos[i].dateSource = .exif
+            } catch {
+                failures.append("\(photo.fileName): \(error.localizedDescription)")
+            }
+        }
+        if !previous.isEmpty {
+            undoManager?.registerUndo(withTarget: self) { doc in
+                MainActor.assumeIsolated { _ = doc.writeFileDates(previous, undoManager: undoManager) }
+            }
+        }
+        return failures
     }
 
     nonisolated static func imageFiles(in url: URL) -> [URL] {

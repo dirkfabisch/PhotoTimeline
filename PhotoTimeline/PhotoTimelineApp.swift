@@ -9,6 +9,9 @@ struct PhotoTimelineApp: App {
                 .background(WindowSizeMemory())
                 .onChange(of: file.fileURL, initial: true) { _, url in showExtension(of: url) }
         }
+        Settings {
+            SettingsView()
+        }
     }
 
     /// The save panel hides the extension by default; keep `.phototimeline` visible in Finder.

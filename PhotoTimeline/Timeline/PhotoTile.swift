@@ -22,6 +22,15 @@ struct PhotoTile: View {
                 }
             }
             // Lifted while dragged: larger, with a soft shadow falling further away.
+            .overlay(alignment: .topLeading) {
+                if photo.hasPendingDate {
+                    Image(systemName: "pencil.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(.white, .orange)
+                        .padding(2)
+                        .help("Neues Datum noch nicht in die Datei geschrieben")
+                }
+            }
             .scaleEffect(isDragging ? 1.08 : 1)
             .shadow(color: .black.opacity(isDragging ? 0.3 : 0.18),
                     radius: isDragging ? 18 : 2, y: isDragging ? 14 : 1)

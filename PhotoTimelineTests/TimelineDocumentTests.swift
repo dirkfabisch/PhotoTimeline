@@ -39,28 +39,81 @@ struct TimelineDocumentTests {
         #expect(doc.photos.isEmpty)
     }
 
-    @Test func dateChangeUndoRestoresFile() throws {
-        let dir = try makeFolder(dates: ["2024:01:01 10:00:00"])
+    @Test func dateChangeStaysPendingUntilWritten() throws {
+        let dir = try makeFolder(dates: ["2024:01:01 10:00:00", "2024:01:01 11:00:00"])
         defer { try? FileManager.default.removeItem(at: dir) }
         let doc = TimelineDocument()
         doc.add([dir], undoManager: nil)
-        let photo = try #require(doc.photos.first)
+        let photo = try #require(doc.photos.first { $0.fileName == "IMG_0.jpg" })
         let file = dir.appendingPathComponent("IMG_0.jpg")
         let original = photo.captureDate
+        let moved = original.addingTimeInterval(3600 * 24)
         let undo = UndoManager()
         undo.groupsByEvent = false
 
         undo.beginUndoGrouping()
-        try doc.setCaptureDate(original.addingTimeInterval(3600), for: photo.id, undoManager: undo)
+        doc.setCaptureDate(moved, for: photo.id, undoManager: undo)
         undo.endUndoGrouping()
-        #expect(CaptureDateReader.read(file)?.captureDate == original.addingTimeInterval(3600))
+        #expect(CaptureDateReader.read(file)?.captureDate == original, "file untouched")
+        #expect(doc.photos.filter(\.hasPendingDate).map(\.id) == [photo.id])
 
+        undo.beginUndoGrouping()
+        #expect(doc.writePendingDates(undoManager: undo).isEmpty)
+        undo.endUndoGrouping()
+        #expect(CaptureDateReader.read(file)?.captureDate == moved)
+        #expect(!doc.photos.contains { $0.hasPendingDate })
+
+        // Undoing the write restores the file; the change is pending again.
         undo.undo()
         #expect(CaptureDateReader.read(file)?.captureDate == original)
-        #expect(doc.photos.first?.captureDate == original)
+        #expect(doc.photos.first { $0.id == photo.id }?.hasPendingDate == true)
 
-        undo.redo()
-        #expect(CaptureDateReader.read(file)?.captureDate == original.addingTimeInterval(3600))
+        // Undoing the move brings back the original date, nothing pending.
+        undo.undo()
+        #expect(doc.photos.first { $0.id == photo.id }?.captureDate == original)
+        #expect(!doc.photos.contains { $0.hasPendingDate })
+    }
+
+    @Test func discardResetsAllPendingDates() throws {
+        let dir = try makeFolder(dates: ["2024:01:01 10:00:00", "2024:01:01 11:00:00"])
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let doc = TimelineDocument()
+        doc.add([dir], undoManager: nil)
+        let originals = Dictionary(uniqueKeysWithValues: doc.photos.map { ($0.id, $0.captureDate) })
+        for photo in doc.photos {
+            doc.setCaptureDate(photo.captureDate.addingTimeInterval(600), for: photo.id, undoManager: nil)
+        }
+        #expect(doc.photos.allSatisfy { $0.hasPendingDate })
+
+        doc.discardPendingDates(undoManager: nil)
+        #expect(doc.photos.allSatisfy { $0.captureDate == originals[$0.id] && !$0.hasPendingDate })
+    }
+
+    @Test func failedWriteStaysPending() throws {
+        let dir = try makeFolder(dates: ["2024:01:01 10:00:00", "2024:01:01 11:00:00"])
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let doc = TimelineDocument()
+        doc.add([dir], undoManager: nil)
+        for photo in doc.photos {
+            doc.setCaptureDate(photo.captureDate.addingTimeInterval(600), for: photo.id, undoManager: nil)
+        }
+        try FileManager.default.removeItem(at: dir.appendingPathComponent("IMG_1.jpg"))
+
+        let failures = doc.writePendingDates(undoManager: nil)
+        #expect(failures.count == 1)
+        #expect(doc.photos.filter(\.hasPendingDate).map(\.fileName) == ["IMG_1.jpg"])
+    }
+
+    @Test func decodesFilesFromBeforePendingDates() throws {
+        let json = """
+        {"version": 1, "photos": [{"id": "\(UUID().uuidString)", "bookmark": "", "fileName": "a.jpg",
+          "captureDate": "2024-01-01T10:00:00Z", "dateSource": "exif", "aspectRatio": 1.5}]}
+        """
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let file = try decoder.decode(TimelineDocument.FileFormat.self, from: Data(json.utf8))
+        #expect(file.granularity == nil)
+        #expect(file.photos.first?.hasPendingDate == false)
     }
 
     /// AppKit autosaves from a background queue — this used to trap.
@@ -69,7 +122,7 @@ struct TimelineDocumentTests {
         defer { try? FileManager.default.removeItem(at: dir) }
         let doc = TimelineDocument()
         doc.add([dir], undoManager: nil)
-        let count = try await Task.detached { try doc.snapshot(contentType: .photoTimeline).count }.value
+        let count = try await Task.detached { try doc.snapshot(contentType: .photoTimeline).photos.count }.value
         #expect(count == 1)
     }
 }

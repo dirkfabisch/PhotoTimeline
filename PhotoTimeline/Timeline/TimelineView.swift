@@ -15,17 +15,10 @@ struct TimelineView: View {
     @State private var containerSize: CGSize = .zero
     @State private var scrollPosition = ScrollPosition()
     @State private var drag: DragState?
-    @State private var pending: PendingChange?
-    @State private var errorMessage: String?
 
     private struct DragState: Equatable {
         var id: UUID
         var offset: CGFloat
-    }
-
-    private struct PendingChange {
-        var photo: PhotoRef
-        var newDate: Date
     }
 
     var body: some View {
@@ -40,10 +33,12 @@ struct TimelineView: View {
         let visible = layout.placements.filter {
             layout.alongRange(of: drawRect).contains(displayedAlong(of: $0))
         }
+        let pendingIDs = Set(document.photos.filter(\.hasPendingDate).map(\.id))
 
         ScrollView([.horizontal, .vertical]) {
             ZStack(alignment: .topLeading) {
-                AxisCanvas(layout: layout, rect: drawRect, placements: visible, drag: drag.map { ($0.id, $0.offset) })
+                AxisCanvas(layout: layout, rect: drawRect, placements: visible, pending: pendingIDs,
+                           drag: drag.map { ($0.id, $0.offset) })
                     .frame(width: drawRect.width, height: drawRect.height)
                     .offset(x: drawRect.minX, y: drawRect.minY)
                     .allowsHitTesting(false)
@@ -72,22 +67,6 @@ struct TimelineView: View {
         }
         .onChange(of: orientation) { scrollToStart(layout: layout) }
         .onChange(of: document.photos.isEmpty) { scrollToStart(layout: layout) }
-        .alert("Aufnahmedatum ändern?", isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil; drag = nil } }), presenting: pending) { change in
-            Button("Ändern") { apply(change) }
-            Button("Abbrechen", role: .cancel) {}
-        } message: { change in
-            Text("""
-            \(change.photo.fileName)
-            \(Self.format(change.photo.captureDate)) → \(Self.format(change.newDate))
-
-            EXIF-Aufnahmedatum und Dateidatum werden in der Originaldatei überschrieben.
-            """)
-        }
-        .alert("Fehler", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
-            Button("OK") {}
-        } message: {
-            Text(errorMessage ?? "")
-        }
     }
 
     // MARK: Tiles
@@ -105,7 +84,7 @@ struct TimelineView: View {
                          isSelected: selection.contains(photo.id))
             .overlay(alignment: .bottom) {
                 if isDragging {
-                    Text(Self.format(Self.roundedToMinute(layout.date(atAlong: along))))
+                    Text(Self.format(newDate(for: photo, atAlong: along, layout: layout)))
                         .font(.system(.title3, design: .serif, weight: .bold).monospacedDigit())
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12).padding(.vertical, 6)
@@ -115,25 +94,22 @@ struct TimelineView: View {
                         .offset(y: 40)
                 }
             }
-            .help("\(photo.fileName)\n\(Self.format(photo.captureDate))")
+            .help(photo.hasPendingDate
+                  ? "\(photo.fileName)\n\(Self.format(photo.captureDate))\nIn der Datei noch: \(Self.format(photo.dateInFile))"
+                  : "\(photo.fileName)\n\(Self.format(photo.captureDate))")
             .position(layout.point(along: along, cross: placement.cross))
             .zIndex(isDragging ? 1 : 0)
             .onTapGesture { onSelect(photo.id) }
             .gesture(
                 DragGesture(minimumDistance: 4)
                     .onChanged { value in
-                        guard pending == nil else { return }
                         drag = DragState(id: photo.id, offset: layout.alongComponent(of: value.translation))
                     }
                     .onEnded { value in
-                        guard pending == nil else { return }
-                        let newDate = Self.roundedToMinute(
-                            layout.date(atAlong: placement.along + layout.alongComponent(of: value.translation)))
-                        if abs(newDate.timeIntervalSince(photo.captureDate)) < 30 {
-                            drag = nil
-                        } else {
-                            pending = PendingChange(photo: photo, newDate: newDate)
-                        }
+                        let date = newDate(for: photo, atAlong: placement.along + layout.alongComponent(of: value.translation),
+                                           layout: layout)
+                        drag = nil
+                        document.setCaptureDate(date, for: photo.id, undoManager: undoManager)
                     }
             )
             .contextMenu {
@@ -146,13 +122,9 @@ struct TimelineView: View {
             }
     }
 
-    private func apply(_ change: PendingChange) {
-        defer { pending = nil; drag = nil }
-        do {
-            try document.setCaptureDate(change.newDate, for: change.photo.id, undoManager: undoManager)
-        } catch {
-            errorMessage = error.localizedDescription
-        }
+    /// Date a drag to `along` results in, limited to the document's granularity.
+    private func newDate(for photo: PhotoRef, atAlong along: CGFloat, layout: TimelineLayout) -> Date {
+        document.granularity.apply(layout.date(atAlong: along), to: photo.captureDate)
     }
 
     // MARK: Scrolling
@@ -191,10 +163,6 @@ struct TimelineView: View {
 
     // MARK: Formatting
 
-    static func roundedToMinute(_ date: Date) -> Date {
-        Date(timeIntervalSinceReferenceDate: (date.timeIntervalSinceReferenceDate / 60).rounded() * 60)
-    }
-
     static func format(_ date: Date) -> String {
         date.formatted(.dateTime.day().month(.twoDigits).year().hour().minute())
     }
@@ -205,6 +173,8 @@ private struct AxisCanvas: View {
     let layout: TimelineLayout
     let rect: CGRect
     let placements: [TimelineLayout.Placement]
+    /// Photos whose date isn't written to the file yet.
+    let pending: Set<UUID>
     let drag: (UUID, CGFloat)?
 
     var body: some View {
@@ -242,13 +212,13 @@ private struct AxisCanvas: View {
                 var connector = Path()
                 connector.move(to: layout.point(along: along, cross: 0))
                 connector.addLine(to: layout.point(along: along, cross: tileEdge))
-                let color: Color = isDragged ? .accentColor : .secondary.opacity(0.5)
+                let color: Color = isDragged ? .accentColor : pending.contains(placement.id) ? .orange : .secondary.opacity(0.5)
                 context.stroke(connector, with: .color(color), lineWidth: isDragged ? 1.5 : 1)
 
                 let dot = layout.point(along: along, cross: 0)
                 let r: CGFloat = isDragged ? 4 : 3
                 context.fill(Path(ellipseIn: CGRect(x: dot.x - r, y: dot.y - r, width: 2 * r, height: 2 * r)),
-                             with: .color(isDragged ? .accentColor : .primary))
+                             with: .color(isDragged ? .accentColor : pending.contains(placement.id) ? .orange : .primary))
             }
         }
     }

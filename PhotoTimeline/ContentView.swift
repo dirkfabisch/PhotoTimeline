@@ -16,6 +16,8 @@ struct ContentView: View {
     @State private var tileSize = TimelineLayout.maxTileSize
     /// True until the user zooms; window size changes then refit (e.g. restored frames after opening).
     @State private var isFitted = true
+    @State private var confirmWrite = false
+    @State private var writeFailures: [String] = []
 
     private let zoomRange: ClosedRange<Double> = -8...0
 
@@ -50,6 +52,27 @@ struct ContentView: View {
                         zoomAnchor = nil
                     }
             )
+            .safeAreaInset(edge: .top, spacing: 0) {
+                let pending = document.photos.filter(\.hasPendingDate).count
+                if pending > 0 {
+                    PendingBanner(count: pending) {
+                        document.discardPendingDates(undoManager: undoManager)
+                    } write: {
+                        confirmWrite = true
+                    }
+                }
+            }
+            .sheet(isPresented: $confirmWrite) {
+                WriteConfirmation(photos: document.photos.filter(\.hasPendingDate)) {
+                    writeFailures = document.writePendingDates(undoManager: undoManager)
+                }
+            }
+            .alert("Nicht alle Fotos konnten geschrieben werden",
+                   isPresented: Binding(get: { !writeFailures.isEmpty }, set: { if !$0 { writeFailures = [] } })) {
+                Button("OK") {}
+            } message: {
+                Text(writeFailures.joined(separator: "\n") + "\n\nDiese Änderungen bleiben offen.")
+            }
             .onGeometryChange(for: CGSize.self, of: \.size) { size in
                 viewport = size
                 if isFitted { fit() }
@@ -88,6 +111,15 @@ struct ContentView: View {
                     }
                     .pickerStyle(.segmented)
                     .help("Ausrichtung des Zeitstrahls")
+                }
+                ToolbarItem {
+                    Picker("Granularität", selection: Binding(
+                        get: { document.granularity },
+                        set: { document.setGranularity($0, undoManager: undoManager) })) {
+                        ForEach(DateGranularity.allCases) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.menu)
+                    .help("Welche Teile des Datums beim Verschieben geändert werden")
                 }
                 ToolbarItemGroup {
                     Button("Verkleinern", systemImage: "minus.magnifyingglass") { setZoom(zoom - 0.25) }
