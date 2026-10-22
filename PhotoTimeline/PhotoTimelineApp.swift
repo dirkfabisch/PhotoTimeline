@@ -11,6 +11,7 @@ struct PhotoTimelineApp: App {
                 .background(WindowPlacement())
                 .onChange(of: file.fileURL, initial: true) { _, url in showExtension(of: url) }
         }
+        .defaultLaunchBehavior(AppDelegate.documentsToRestore.isEmpty ? .automatic : .suppressed)
         Settings {
             SettingsView()
         }

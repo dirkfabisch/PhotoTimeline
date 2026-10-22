@@ -4,27 +4,32 @@ import AppKit
 /// the usual Open panel appears at launch.
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private static let key = "openDocumentBookmarks"
-    private var restore: [URL] = []
 
-    func applicationWillFinishLaunching(_ notification: Notification) {
-        let bookmarks = UserDefaults.standard.array(forKey: Self.key) as? [Data] ?? []
-        restore = bookmarks.compactMap { data in
+    /// Resolved before the scenes are built, so the launch Open panel can be suppressed.
+    static let documentsToRestore: [URL] = {
+        let bookmarks = UserDefaults.standard.array(forKey: key) as? [Data] ?? []
+        return bookmarks.compactMap { data in
             var stale = false
             guard let url = try? URL(resolvingBookmarkData: data, options: .withSecurityScope,
                                      bookmarkDataIsStale: &stale),
                   url.startAccessingSecurityScopedResource() else { return nil }
             return url
         }
-    }
+    }()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        for url in restore {
-            NSDocumentController.shared.openDocument(withContentsOf: url, display: true) { _, _, _ in }
+        let urls = Self.documentsToRestore
+        guard !urls.isEmpty else { return }
+        var remaining = urls.count
+        for url in urls {
+            NSDocumentController.shared.openDocument(withContentsOf: url, display: true) { _, _, _ in
+                remaining -= 1
+                // Nothing could be reopened: fall back to the Open panel that was suppressed.
+                if remaining == 0, NSDocumentController.shared.documents.isEmpty {
+                    NSDocumentController.shared.openDocument(nil)
+                }
+            }
         }
-    }
-
-    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
-        restore.isEmpty
     }
 
     func applicationWillTerminate(_ notification: Notification) {
