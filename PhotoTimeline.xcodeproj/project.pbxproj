@@ -220,6 +220,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = PhotoTimeline/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Photo Timeline";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
@@ -248,6 +249,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = PhotoTimeline/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Photo Timeline";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";

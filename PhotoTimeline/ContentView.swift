@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @ObservedObject var document: TimelineDocument
@@ -18,6 +19,7 @@ struct ContentView: View {
     @State private var isFitted = true
     @State private var confirmWrite = false
     @State private var writeFailures: [String] = []
+    @State private var choosePhotos = false
 
     private let zoomRange: ClosedRange<Double> = -8...0
 
@@ -37,8 +39,14 @@ struct ContentView: View {
     }
 
     private var timeline: some View {
-        TimelineView(document: document, orientation: orientation, pointsPerSecond: pow(10, zoom), tileSize: tileSize,
-                     zoomAnchor: zoomAnchor, selection: previewIDs, onSelect: togglePreview)
+        Group {
+            if document.photos.isEmpty {
+                EmptyTimeline(isTargeted: isTargeted) { choosePhotos = true }
+            } else {
+                TimelineView(document: document, orientation: orientation, pointsPerSecond: pow(10, zoom), tileSize: tileSize,
+                             zoomAnchor: zoomAnchor, selection: previewIDs, onSelect: togglePreview)
+            }
+        }
             .simultaneousGesture(
                 MagnifyGesture()
                     .onChanged { value in
@@ -78,22 +86,17 @@ struct ContentView: View {
                 if isFitted { fit() }
             }
             .overlay {
-                if document.photos.isEmpty {
-                    ContentUnavailableView("Bilder hierher ziehen", systemImage: "photo.on.rectangle.angled",
-                                           description: Text("Einzelne Bilder oder ganze Ordner. Die Dateien bleiben, wo sie sind."))
-                }
-            }
-            .overlay {
-                if isTargeted {
+                if isTargeted, !document.photos.isEmpty {
                     RoundedRectangle(cornerRadius: 10).strokeBorder(Color.accentColor, lineWidth: 3).padding(4)
                 }
             }
             .dropDestination(for: URL.self) { urls, _ in
-                let wasEmpty = document.photos.isEmpty
-                let added = document.add(urls, undoManager: undoManager)
-                if wasEmpty, added > 0 { fit() }
-                return added > 0
+                addPhotos(urls)
             } isTargeted: { isTargeted = $0 }
+            .fileImporter(isPresented: $choosePhotos, allowedContentTypes: [.image, .folder],
+                          allowsMultipleSelection: true) { result in
+                if case .success(let urls) = result { addPhotos(urls) }
+            }
             .onAppear {
                 #if DEBUG
                 // Lets automated runs populate a window without Finder drag & drop.
@@ -122,19 +125,29 @@ struct ContentView: View {
                     .help("Welche Teile des Datums beim Verschieben geändert werden")
                 }
                 ToolbarItemGroup {
-                    Button("Verkleinern", systemImage: "minus.magnifyingglass") { setZoom(zoom - 0.25) }
-                        .keyboardShortcut("-")
-                    Slider(value: Binding(get: { zoom }, set: setZoom), in: zoomRange)
-                        .frame(width: 140)
-                        .help("Zoom")
-                    Button("Vergrößern", systemImage: "plus.magnifyingglass") { setZoom(zoom + 0.25) }
-                        .keyboardShortcut("+")
-                    Button("Einpassen", systemImage: "arrow.down.right.and.arrow.up.left") { fit() }
-                        .keyboardShortcut("0")
-                        .disabled(document.photos.count < 2)
+                    Group {
+                        Button("Verkleinern", systemImage: "minus.magnifyingglass") { setZoom(zoom - 0.25) }
+                            .keyboardShortcut("-")
+                        Slider(value: Binding(get: { zoom }, set: setZoom), in: zoomRange)
+                            .frame(width: 140)
+                            .help("Zoom")
+                        Button("Vergrößern", systemImage: "plus.magnifyingglass") { setZoom(zoom + 0.25) }
+                            .keyboardShortcut("+")
+                        Button("Einpassen", systemImage: "arrow.down.right.and.arrow.up.left") { fit() }
+                            .keyboardShortcut("0")
+                    }
+                    .disabled(document.photos.count < 2)
                 }
             }
             .onChange(of: orientation) { fit() }
+    }
+
+    @discardableResult
+    private func addPhotos(_ urls: [URL]) -> Bool {
+        let wasEmpty = document.photos.isEmpty
+        let added = document.add(urls, undoManager: undoManager)
+        if wasEmpty, added > 0 { fit() }
+        return added > 0
     }
 
     /// Click toggles a photo's preview; a third one replaces the oldest.

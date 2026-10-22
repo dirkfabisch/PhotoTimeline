@@ -1,0 +1,107 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "display-p3:0.14118,0.22353,0.36863,1.00000",
+      "srgb:0.05882,0.10196,0.18039,1.00000"
+    ]
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "blend-mode" : "normal",
+          "glass" : true,
+          "image-name" : "4a-zeitpunkt.svg",
+          "name" : "4a-zeitpunkt"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    },
+    {
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "3c-vordergrund.svg",
+          "name" : "3c-vordergrund"
+        },
+        {
+          "glass" : false,
+          "image-name" : "3b-sonne.svg",
+          "name" : "3b-sonne"
+        },
+        {
+          "glass" : false,
+          "image-name" : "3a-himmel.svg",
+          "name" : "3a-himmel"
+        }
+      ],
+      "name" : "Vordergrund",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    },
+    {
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "2c-rahmen-3.svg",
+          "name" : "2c-rahmen-3"
+        },
+        {
+          "image-name" : "2b-rahmen-2.svg",
+          "name" : "2b-rahmen-2"
+        },
+        {
+          "glass" : false,
+          "image-name" : "2a-rahmen-1.svg",
+          "name" : "2a-rahmen-1"
+        }
+      ],
+      "name" : "Rahmen",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    },
+    {
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "1a-achse.svg",
+          "name" : "1a-achse"
+        }
+      ],
+      "name" : "Achse",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
