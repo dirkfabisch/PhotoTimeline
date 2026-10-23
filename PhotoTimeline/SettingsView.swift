@@ -13,6 +13,8 @@ struct SettingsView: View {
             Text("Standard für neue Dokumente. Pro Dokument in der Symbolleiste änderbar.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
+                .frame(width: 260, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
 
             Divider().padding(.vertical, 8)
 
@@ -20,9 +22,10 @@ struct SettingsView: View {
             Text("Fragt einmal täglich bei GitHub nach einer neuen Version. Es werden keine Daten über deinen Mac gesendet.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
+                .frame(width: 260, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(20)
-        .frame(width: 420)
+        .fixedSize()
     }
 }
