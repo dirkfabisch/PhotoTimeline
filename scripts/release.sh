@@ -36,7 +36,7 @@ TAG="v$VERSION"
 BUILD=$(git rev-list HEAD --count)
 ARCHIVE=build/PhotoTimeline.xcarchive
 EXPORT=build/export
-APP=$EXPORT/PhotoTimeline.app
+APP="$EXPORT/Photo Timeline.app"
 OUT=build/release-$VERSION
 ZIP=$OUT/PhotoTimeline-$VERSION.zip
 NOTES=$OUT/PhotoTimeline-$VERSION.md
@@ -87,7 +87,7 @@ for item in "$APP" "$APP"/Contents/Frameworks/Sparkle.framework "$APP"/Contents/
   [[ "$info" == *"Authority=Developer ID Application: "*"($TEAM_ID)"* && "$info" == *"Timestamp="* ]] \
     || { echo "Nicht mit Developer ID + Zeitstempel signiert: $item" >&2; exit 1; }
 done
-[[ "$(lipo -archs "$APP/Contents/MacOS/PhotoTimeline")" == "arm64" ]] || { echo "Nicht nur arm64" >&2; exit 1; }
+[[ "$(lipo -archs "$APP/Contents/MacOS/Photo Timeline")" == "arm64" ]] || { echo "Nicht nur arm64" >&2; exit 1; }
 entitlements=$(codesign -d --entitlements - --xml "$APP" 2>/dev/null)
 [[ "$entitlements" != *get-task-allow* ]] || { echo "get-task-allow im Release" >&2; exit 1; }
 echo "  $VERSION ($BUILD), arm64, Developer ID, Sparkle-Dienste signiert"

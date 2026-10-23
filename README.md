@@ -44,7 +44,7 @@ Or from the command line:
 
 ```sh
 xcodebuild -scheme PhotoTimeline -configuration Release -derivedDataPath build build
-open build/Build/Products/Release/PhotoTimeline.app
+open "build/Build/Products/Release/Photo Timeline.app"
 ```
 
 The project is set up to sign locally ("Sign to Run Locally"), so it builds without an Apple Developer account. Run the tests with:
