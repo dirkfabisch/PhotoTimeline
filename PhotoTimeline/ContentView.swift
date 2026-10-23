@@ -79,7 +79,7 @@ struct ContentView: View {
                    isPresented: Binding(get: { !writeFailures.isEmpty }, set: { if !$0 { writeFailures = [] } })) {
                 Button("OK") {}
             } message: {
-                Text(writeFailures.joined(separator: "\n") + "\n\nDiese Änderungen bleiben offen.")
+                Text("\(writeFailures.joined(separator: "\n"))\n\nDiese Änderungen bleiben offen.")
             }
             .onGeometryChange(for: CGSize.self, of: \.size) { size in
                 viewport = size

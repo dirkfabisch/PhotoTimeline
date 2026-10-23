@@ -95,7 +95,7 @@ struct TimelineView: View {
                 }
             }
             .help(photo.hasPendingDate
-                  ? "\(photo.fileName)\n\(Self.format(photo.captureDate))\nIn der Datei noch: \(Self.format(photo.dateInFile))"
+                  ? String(localized: "\(photo.fileName)\n\(Self.format(photo.captureDate))\nIn der Datei noch: \(Self.format(photo.dateInFile))")
                   : "\(photo.fileName)\n\(Self.format(photo.captureDate))")
             .position(layout.point(along: along, cross: placement.cross))
             .zIndex(isDragging ? 1 : 0)

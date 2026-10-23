@@ -10,10 +10,10 @@ nonisolated enum MetadataWriterError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .unreadable: "Die Bilddatei konnte nicht gelesen werden."
-        case .unsupportedFormat(let type): "Das Format \(type) kann (noch) nicht beschrieben werden."
-        case .writeFailed(let reason): "Schreiben der Metadaten fehlgeschlagen: \(reason)"
-        case .verificationFailed: "Die geschriebenen Metadaten konnten nicht verifiziert werden. Die Datei wurde nicht verändert."
+        case .unreadable: String(localized: "Die Bilddatei konnte nicht gelesen werden.")
+        case .unsupportedFormat(let type): String(localized: "Das Format \(type) kann (noch) nicht beschrieben werden.")
+        case .writeFailed(let reason): String(localized: "Schreiben der Metadaten fehlgeschlagen: \(reason)")
+        case .verificationFailed: String(localized: "Die geschriebenen Metadaten konnten nicht verifiziert werden. Die Datei wurde nicht verändert.")
         }
     }
 }

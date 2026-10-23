@@ -15,10 +15,10 @@ nonisolated enum DateGranularity: String, Codable, CaseIterable, Identifiable, S
 
     var title: String {
         switch self {
-        case .year: "Nur Jahr"
-        case .yearMonth: "Monat und Jahr"
-        case .day: "Tag, Monat und Jahr"
-        case .all: "Alles (minutengenau)"
+        case .year: String(localized: "Nur Jahr")
+        case .yearMonth: String(localized: "Monat und Jahr")
+        case .day: String(localized: "Tag, Monat und Jahr")
+        case .all: String(localized: "Alles (minutengenau)")
         }
     }
 

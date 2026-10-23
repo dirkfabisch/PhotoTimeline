@@ -95,7 +95,7 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
         }
         guard !added.isEmpty else { return 0 }
         insert(added, undoManager: undoManager)
-        undoManager?.setActionName("Bilder hinzufügen")
+        undoManager?.setActionName(String(localized: "Bilder hinzufügen"))
         return added.count
     }
 
@@ -107,7 +107,7 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
         undoManager?.registerUndo(withTarget: self) { doc in
             MainActor.assumeIsolated { doc.insert(removed, undoManager: undoManager) }
         }
-        undoManager?.setActionName("Aus Zeitstrahl entfernen")
+        undoManager?.setActionName(String(localized: "Aus Zeitstrahl entfernen"))
     }
 
     @MainActor
@@ -127,7 +127,7 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
         undoManager?.registerUndo(withTarget: self) { doc in
             MainActor.assumeIsolated { doc.setGranularity(old, undoManager: undoManager) }
         }
-        undoManager?.setActionName("Granularität ändern")
+        undoManager?.setActionName(String(localized: "Granularität ändern"))
     }
 
     /// Changes the date on the timeline only; the image file is untouched until `writePendingDates`.
@@ -142,7 +142,7 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
         undoManager?.registerUndo(withTarget: self) { doc in
             MainActor.assumeIsolated { doc.setCaptureDate(old, for: id, undoManager: undoManager) }
         }
-        undoManager?.setActionName("Aufnahmedatum ändern")
+        undoManager?.setActionName(String(localized: "Aufnahmedatum ändern"))
     }
 
     /// Resets every pending date to what the file holds.
@@ -151,7 +151,7 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
         for photo in photos where photo.hasPendingDate {
             setCaptureDate(photo.dateInFile, for: photo.id, undoManager: undoManager)
         }
-        undoManager?.setActionName("Änderungen verwerfen")
+        undoManager?.setActionName(String(localized: "Änderungen verwerfen"))
     }
 
     /// Writes all pending dates into the image files (EXIF + file dates) in one go.
@@ -160,7 +160,7 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
     func writePendingDates(undoManager: UndoManager?) -> [String] {
         let dates = photos.filter(\.hasPendingDate).map { ($0.id, $0.captureDate) }
         let failures = writeFileDates(dates, undoManager: undoManager)
-        undoManager?.setActionName("In Fotos schreiben")
+        undoManager?.setActionName(String(localized: "In Fotos schreiben"))
         return failures
     }
 

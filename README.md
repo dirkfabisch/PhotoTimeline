@@ -11,7 +11,7 @@ A macOS app that lays your photos out on a timeline, spaced by when they were ta
 - **Horizontal or vertical**, zoom with the toolbar, the keyboard (⌘+ / ⌘− / ⌘0) or a pinch on the trackpad.
 - **Preview:** click a photo to see it large; two photos can be compared side by side.
 - **Change capture dates by dragging.** While you drag, a badge shows the new date. Choose how much of the date may change: only the year, month and year, the day, or everything to the minute.
-- **Automatic updates** via [Sparkle](https://sparkle-project.org): the app checks GitHub once a day and installs new versions on request. Turn it off in Settings, or use "Nach Updates suchen…" (Check for Updates) in the app menu.
+- **Automatic updates** via [Sparkle](https://sparkle-project.org): the app checks GitHub once a day and installs new versions on request. Turn it off in Settings, or use "Check for Updates…" in the app menu.
 - **Write in one go.** Date changes are kept in the timeline document and marked until you write them into the photos. Then the EXIF capture date and the file dates are updated for all changed photos at once. Undo writes the previous dates back.
 
 ## Download
@@ -20,7 +20,7 @@ Get the latest version from [Releases](https://github.com/dirkfabisch/PhotoTimel
 
 Requirements: macOS 26 or later on a Mac with Apple silicon.
 
-> **Photo Timeline writes into your original files** when you choose "In Fotos schreiben…" (write to photos). It checks every file after writing and leaves it untouched if the result does not read back correctly, but please keep a backup of photos you care about.
+> **Photo Timeline writes into your original files** when you choose "Write to Photos…". It checks every file after writing and leaves it untouched if the result does not read back correctly, but please keep a backup of photos you care about.
 >
 > Writing is tested with JPEG, HEIC, PNG and TIFF. RAW formats such as DNG are not tested yet.
 

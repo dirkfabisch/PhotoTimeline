@@ -1,0 +1,546 @@
+{
+  "sourceLanguage": "de",
+  "strings": {
+    "%@\n\nDiese Änderungen bleiben offen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@\n\nThese changes remain pending."
+          }
+        }
+      }
+    },
+    "%@\n%@\nIn der Datei noch: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@\n%2$@\nStill in file: %3$@"
+          }
+        }
+      }
+    },
+    "%lld Datumsänderungen sind noch nicht in den Fotos gespeichert": {
+      "localizations": {
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "1 Datumsänderung ist noch nicht in den Fotos gespeichert"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Datumsänderungen sind noch nicht in den Fotos gespeichert"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "1 date change hasn’t been saved to the photos yet"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld date changes haven’t been saved to the photos yet"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld Fotos schreiben": {
+      "localizations": {
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "1 Foto schreiben"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Fotos schreiben"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Write 1 Photo"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Write %lld Photos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Abbrechen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "Alles (minutengenau)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything (to the minute)"
+          }
+        }
+      }
+    },
+    "Aufnahmedaten in Fotos schreiben?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write capture dates to photos?"
+          }
+        }
+      }
+    },
+    "Aufnahmedatum ändern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change Capture Date"
+          }
+        }
+      }
+    },
+    "Aus Zeitstrahl entfernen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from Timeline"
+          }
+        }
+      }
+    },
+    "Ausrichtung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orientation"
+          }
+        }
+      }
+    },
+    "Ausrichtung des Zeitstrahls": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timeline orientation"
+          }
+        }
+      }
+    },
+    "Automatisch nach Updates suchen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatically check for updates"
+          }
+        }
+      }
+    },
+    "Bilder hinzufügen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Photos"
+          }
+        }
+      }
+    },
+    "Das Format %@ kann (noch) nicht beschrieben werden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The format %@ can’t be written (yet)."
+          }
+        }
+      }
+    },
+    "Datum beim Verschieben ändern:": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date change when dragging:"
+          }
+        }
+      }
+    },
+    "Die Bilddatei konnte nicht gelesen werden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The image file couldn’t be read."
+          }
+        }
+      }
+    },
+    "Die geschriebenen Metadaten konnten nicht verifiziert werden. Die Datei wurde nicht verändert.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The written metadata couldn’t be verified. The file was not changed."
+          }
+        }
+      }
+    },
+    "EXIF-Aufnahmedatum und Dateidatum werden in den Originaldateien überschrieben. ⌘Z schreibt die alten Daten zurück.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The EXIF capture date and the file dates are overwritten in the original files. ⌘Z writes the old dates back."
+          }
+        }
+      }
+    },
+    "Einpassen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fit"
+          }
+        }
+      }
+    },
+    "Einzelne Fotos oder ganze Ordner aus dem Finder.\nDie Dateien bleiben, wo sie sind – die Timeline merkt sich nur, wo sie liegen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Single photos or whole folders from the Finder.\nThe files stay where they are – the timeline only remembers where they live."
+          }
+        }
+      }
+    },
+    "Fotos auswählen…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Photos…"
+          }
+        }
+      }
+    },
+    "Fotos hierher ziehen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag photos here"
+          }
+        }
+      }
+    },
+    "Fragt einmal täglich bei GitHub nach einer neuen Version. Es werden keine Daten über deinen Mac gesendet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asks GitHub once a day for a new version. No data about your Mac is sent."
+          }
+        }
+      }
+    },
+    "Granularität": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Granularity"
+          }
+        }
+      }
+    },
+    "Granularität ändern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change Granularity"
+          }
+        }
+      }
+    },
+    "Horizontal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horizontal"
+          }
+        }
+      }
+    },
+    "Im Finder zeigen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show in Finder"
+          }
+        }
+      }
+    },
+    "In Fotos schreiben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write to Photos"
+          }
+        }
+      }
+    },
+    "In Fotos schreiben…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write to Photos…"
+          }
+        }
+      }
+    },
+    "Kein EXIF-Aufnahmedatum – Dateidatum verwendet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No EXIF capture date – using the file date"
+          }
+        }
+      }
+    },
+    "Monat und Jahr": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Month and year"
+          }
+        }
+      }
+    },
+    "Nach Updates suchen…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for Updates…"
+          }
+        }
+      }
+    },
+    "Neues Datum noch nicht in die Datei geschrieben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New date not yet written to the file"
+          }
+        }
+      }
+    },
+    "Nicht alle Fotos konnten geschrieben werden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not all photos could be written"
+          }
+        }
+      }
+    },
+    "Nur Jahr": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year only"
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "Schließen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "Schreiben der Metadaten fehlgeschlagen: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writing the metadata failed: %@"
+          }
+        }
+      }
+    },
+    "Standard für neue Dokumente. Pro Dokument in der Symbolleiste änderbar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default for new documents. Can be changed per document in the toolbar."
+          }
+        }
+      }
+    },
+    "Tag, Monat und Jahr": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day, month and year"
+          }
+        }
+      }
+    },
+    "Vergrößern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoom In"
+          }
+        }
+      }
+    },
+    "Verkleinern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoom Out"
+          }
+        }
+      }
+    },
+    "Vertikal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertical"
+          }
+        }
+      }
+    },
+    "Verwerfen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discard"
+          }
+        }
+      }
+    },
+    "Vorschau schließen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close preview"
+          }
+        }
+      }
+    },
+    "Welche Teile des Datums beim Verschieben geändert werden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which parts of the date change when dragging"
+          }
+        }
+      }
+    },
+    "Zoom": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoom"
+          }
+        }
+      }
+    },
+    "Änderungen verwerfen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discard Changes"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

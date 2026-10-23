@@ -10,9 +10,7 @@ struct PendingBanner: View {
         HStack(spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
-            Text(count == 1
-                 ? "1 Datumsänderung ist noch nicht in den Fotos gespeichert"
-                 : "\(count) Datumsänderungen sind noch nicht in den Fotos gespeichert")
+            Text("\(count) Datumsänderungen sind noch nicht in den Fotos gespeichert")
                 .fontWeight(.medium)
             Spacer()
             Button("Verwerfen", action: discard)
@@ -58,7 +56,7 @@ struct WriteConfirmation: View {
                 Spacer()
                 Button("Abbrechen", role: .cancel) { dismiss() }
                     .keyboardShortcut(.cancelAction)
-                Button(photos.count == 1 ? "1 Foto schreiben" : "\(photos.count) Fotos schreiben") {
+                Button("\(photos.count) Fotos schreiben") {
                     dismiss()
                     write()
                 }
