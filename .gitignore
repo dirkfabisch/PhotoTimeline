@@ -9,6 +9,9 @@ xcuserdata/
 *.certSigningRequest
 *.mobileprovision
 *.provisionprofile
+*.pem
+*private-key*
+*private_key*
 .env
 *.env
 !*.env.example

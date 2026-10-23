@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct PhotoTimelineApp: App {
     @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
+    @State private var updater = Updater()
 
     var body: some Scene {
         DocumentGroup(newDocument: { TimelineDocument() }) { file in
@@ -12,8 +13,9 @@ struct PhotoTimelineApp: App {
                 .onChange(of: file.fileURL, initial: true) { _, url in showExtension(of: url) }
         }
         .defaultLaunchBehavior(AppDelegate.documentsToRestore.isEmpty ? .automatic : .suppressed)
+        .commands { UpdateCommands(updater: updater) }
         Settings {
-            SettingsView()
+            SettingsView(updater: updater)
         }
     }
 

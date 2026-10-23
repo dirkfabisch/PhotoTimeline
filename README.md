@@ -11,6 +11,7 @@ A macOS app that lays your photos out on a timeline, spaced by when they were ta
 - **Horizontal or vertical**, zoom with the toolbar, the keyboard (⌘+ / ⌘− / ⌘0) or a pinch on the trackpad.
 - **Preview:** click a photo to see it large; two photos can be compared side by side.
 - **Change capture dates by dragging.** While you drag, a badge shows the new date. Choose how much of the date may change: only the year, month and year, the day, or everything to the minute.
+- **Automatic updates** via [Sparkle](https://sparkle-project.org): the app checks GitHub once a day and installs new versions on request. Turn it off in Settings, or use "Nach Updates suchen…" (Check for Updates) in the app menu.
 - **Write in one go.** Date changes are kept in the timeline document and marked until you write them into the photos. Then the EXIF capture date and the file dates are updated for all changed photos at once. Undo writes the previous dates back.
 
 ## Download
@@ -27,7 +28,7 @@ The user interface is currently in German. An English localization is the next p
 
 ## Privacy
 
-The app runs in the macOS App Sandbox. It can only read and write the photos and folders you drop into it or pick in the Open panel, and it makes no network connections.
+The app runs in the macOS App Sandbox. It can only read and write the photos and folders you drop into it or pick in the Open panel. Its only network connection is the update check: it downloads the release feed from GitHub and, if you agree, the new version. No information about your Mac or your photos is sent.
 
 ## Build it yourself
 
@@ -56,15 +57,29 @@ xcodebuild test -scheme PhotoTimeline -destination 'platform=macOS'
 
 For maintainers with a Developer ID certificate. Signing settings and notary credentials stay on your Mac and are never committed.
 
+The version comes from git: `CFBundleShortVersionString` is the latest tag `vX.Y.Z`, `CFBundleVersion` is the number of commits (`scripts/versionupdate.sh`, run as a build phase). Never edit the version in the project.
+
+One-time setup:
+
 1. Copy `scripts/release.env.example` to `scripts/release.env` and enter your team ID.
-2. Store notary credentials in your keychain once:
+2. Store notary credentials in your keychain:
    ```sh
    xcrun notarytool store-credentials PhotoTimeline --apple-id <apple-id> --team-id <team-id>
    ```
-3. Raise `MARKETING_VERSION` in the project, commit and push.
-4. Run `scripts/release.sh --publish`. It builds, signs, notarizes, staples, checks the app with Gatekeeper, tags the version and uploads the zip as a GitHub release.
+3. Create the Sparkle signing key (stored in your keychain; keep an offline backup with `generate_keys -x`):
+   ```sh
+   build/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys
+   ```
+   The public key goes into `SUPublicEDKey` in `PhotoTimeline/Info.plist`.
 
-Without `--publish` the script only produces the notarized zip in `build/`.
+For each release, commit and push, then run:
+
+```sh
+scripts/release.sh 0.2.0 --publish              # release notes from the commit titles
+scripts/release.sh 0.2.0 --publish --notes notes.md
+```
+
+The script tags `v0.2.0`, archives and exports with your Developer ID, notarizes and staples the app, checks it with Gatekeeper, creates a signed Sparkle appcast and uploads zip and `appcast.xml` as a GitHub release. The app's feed URL always points to the newest release. Without `--publish` it does everything except pushing and removes the local tag again.
 
 ## Project layout
 
