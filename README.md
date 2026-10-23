@@ -10,7 +10,7 @@ A macOS app that lays your photos out on a timeline, spaced by when they were ta
 - **Proportional timeline.** The distance between two photos matches the time between them. Photos taken close together stack in lanes above and below the axis, so they never cover each other, and a line to the axis marks each exact moment.
 - **Horizontal or vertical**, zoom with the toolbar, the keyboard (⌘+ / ⌘− / ⌘0) or a pinch on the trackpad.
 - **Preview:** click a photo to see it large; two photos can be compared side by side.
-- **Quick Look and Finder icon** show an image of the whole timeline.
+- **Quick Look** shows an image of the whole timeline.
 - **Change capture dates by dragging.** While you drag, a badge shows the new date. Choose how much of the date may change: only the year, month and year, the day, or everything to the minute.
 - **Automatic updates** via [Sparkle](https://sparkle-project.org): the app checks GitHub once a day and installs new versions on request. Turn it off in Settings, or use "Check for Updates…" in the app menu.
 - **Write in one go.** Date changes are kept in the timeline document and marked until you write them into the photos. Then the EXIF capture date and the file dates are updated for all changed photos at once. Undo writes the previous dates back.
@@ -89,7 +89,7 @@ The script tags `v0.2.0`, archives and exports with your Developer ID, notarizes
 | `PhotoTimeline/Model` | Timeline document and its package format, photo references, security-scoped bookmarks |
 | `PhotoTimeline/Metadata` | Reading and writing capture dates with ImageIO |
 | `PhotoTimeline/Timeline` | Timeline layout, axis, tiles, preview, Quick Look image, empty state |
-| `QuickLookPreview`, `QuickLookThumbnail` | Quick Look and Finder icon extensions for `.phototimeline` documents |
+| `QuickLookPreview` | Quick Look extension for `.phototimeline` documents |
 | `PhotoTimelineTests` | Unit tests (Swift Testing) |
 | `Design/AppIcon` | Icon layers and earlier icon concepts for Icon Composer |
 | `scripts` | Release script |

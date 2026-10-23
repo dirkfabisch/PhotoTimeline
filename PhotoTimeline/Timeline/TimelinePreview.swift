@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The whole timeline fitted into one image, for Quick Look and the Finder icon.
+/// The whole timeline fitted into one image, for Quick Look.
 struct TimelinePreview: View {
     let photos: [PhotoRef]
     let orientation: TimelineOrientation

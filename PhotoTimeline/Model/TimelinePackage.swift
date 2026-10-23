@@ -4,7 +4,7 @@ import Foundation
 ///
 ///     Urlaub.phototimeline/
 ///     ├── timeline.json
-///     ├── preview.png        ← Quick Look and the Finder icon
+///     ├── preview.png        ← Quick Look
 ///     └── Thumbnails/<photo id>.jpg
 ///
 /// Files from before the package format are a single JSON file; they still load and become a package on the next save.

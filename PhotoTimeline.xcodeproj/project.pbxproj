@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		A10000000000000000000072 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000071 /* Sparkle */; };
 		A1000000000000000000008D /* QuickLookPreview.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A10000000000000000000081 /* QuickLookPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		A1000000000000000000009D /* QuickLookThumbnail.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A10000000000000000000091 /* QuickLookThumbnail.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,13 +26,6 @@
 			remoteGlobalIDString = A10000000000000000000080;
 			remoteInfo = QuickLookPreview;
 		};
-		A1000000000000000000009B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A10000000000000000000001 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A10000000000000000000090;
-			remoteInfo = QuickLookThumbnail;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,7 +36,6 @@
 			dstSubfolderSpec = 13;
 			files = (
 				A1000000000000000000008D /* QuickLookPreview.appex in Embed Foundation Extensions */,
-				A1000000000000000000009D /* QuickLookThumbnail.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -55,7 +46,6 @@
 		A10000000000000000000011 /* Photo Timeline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photo Timeline.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000031 /* PhotoTimelineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoTimelineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000081 /* QuickLookPreview.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = QuickLookPreview.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		A10000000000000000000091 /* QuickLookThumbnail.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = QuickLookThumbnail.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -72,13 +62,6 @@
 				Info.plist,
 			);
 			target = A10000000000000000000080 /* QuickLookPreview */;
-		};
-		A10000000000000000000097 /* Exceptions for "QuickLookThumbnail" folder in "QuickLookThumbnail" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A10000000000000000000090 /* QuickLookThumbnail */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -102,14 +85,6 @@
 				A10000000000000000000087 /* Exceptions for "QuickLookPreview" folder in "QuickLookPreview" target */,
 			);
 			path = QuickLookPreview;
-			sourceTree = "<group>";
-		};
-		A10000000000000000000096 /* QuickLookThumbnail */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A10000000000000000000097 /* Exceptions for "QuickLookThumbnail" folder in "QuickLookThumbnail" target */,
-			);
-			path = QuickLookThumbnail;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -137,13 +112,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A10000000000000000000093 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -153,7 +121,6 @@
 				A10000000000000000000004 /* PhotoTimeline */,
 				A10000000000000000000005 /* PhotoTimelineTests */,
 				A10000000000000000000086 /* QuickLookPreview */,
-				A10000000000000000000096 /* QuickLookThumbnail */,
 				A10000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -164,7 +131,6 @@
 				A10000000000000000000011 /* Photo Timeline.app */,
 				A10000000000000000000031 /* PhotoTimelineTests.xctest */,
 				A10000000000000000000081 /* QuickLookPreview.appex */,
-				A10000000000000000000091 /* QuickLookThumbnail.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -186,7 +152,6 @@
 			);
 			dependencies = (
 				A1000000000000000000008C /* PBXTargetDependency */,
-				A1000000000000000000009C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A10000000000000000000004 /* PhotoTimeline */,
@@ -241,27 +206,6 @@
 			productReference = A10000000000000000000081 /* QuickLookPreview.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		A10000000000000000000090 /* QuickLookThumbnail */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A10000000000000000000098 /* Build configuration list for PBXNativeTarget "QuickLookThumbnail" */;
-			buildPhases = (
-				A10000000000000000000092 /* Sources */,
-				A10000000000000000000093 /* Frameworks */,
-				A10000000000000000000094 /* Resources */,
-				A10000000000000000000095 /* Version Update */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				A10000000000000000000096 /* QuickLookThumbnail */,
-			);
-			name = QuickLookThumbnail;
-			productName = QuickLookThumbnail;
-			productReference = A10000000000000000000091 /* QuickLookThumbnail.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -302,7 +246,6 @@
 				A10000000000000000000010 /* PhotoTimeline */,
 				A10000000000000000000030 /* PhotoTimelineTests */,
 				A10000000000000000000080 /* QuickLookPreview */,
-				A10000000000000000000090 /* QuickLookThumbnail */,
 			);
 		};
 /* End PBXProject section */
@@ -323,13 +266,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A10000000000000000000084 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A10000000000000000000094 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -377,25 +313,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/scripts/versionupdate.sh\"\n";
 		};
-		A10000000000000000000095 /* Version Update */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Version Update";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/scripts/versionupdate.sh\"\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -420,13 +337,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A10000000000000000000092 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -439,11 +349,6 @@
 			isa = PBXTargetDependency;
 			target = A10000000000000000000080 /* QuickLookPreview */;
 			targetProxy = A1000000000000000000008B /* PBXContainerItemProxy */;
-		};
-		A1000000000000000000009C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A10000000000000000000090 /* QuickLookThumbnail */;
-			targetProxy = A1000000000000000000009B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -701,63 +606,6 @@
 			};
 			name = Release;
 		};
-		A10000000000000000000099 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = QuickLookThumbnail/QuickLookThumbnail.entitlements;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = QuickLookThumbnail/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Photo Timeline Thumbnail";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = de.fabisch.PhotoTimeline.QuickLookThumbnail;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Debug;
-		};
-		A1000000000000000000009A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = QuickLookThumbnail/QuickLookThumbnail.entitlements;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = QuickLookThumbnail/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Photo Timeline Thumbnail";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = de.fabisch.PhotoTimeline.QuickLookThumbnail;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -793,15 +641,6 @@
 			buildConfigurations = (
 				A10000000000000000000089 /* Debug */,
 				A1000000000000000000008A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A10000000000000000000098 /* Build configuration list for PBXNativeTarget "QuickLookThumbnail" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A10000000000000000000099 /* Debug */,
-				A1000000000000000000009A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
