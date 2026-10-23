@@ -111,9 +111,25 @@ struct TimelineDocumentTests {
         """
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        let file = try decoder.decode(TimelineDocument.FileFormat.self, from: Data(json.utf8))
+        let file = try decoder.decode(TimelinePackage.FileFormat.self, from: Data(json.utf8))
         #expect(file.granularity == nil)
         #expect(file.photos.first?.hasPendingDate == false)
+    }
+
+    @Test func thumbnailsAndPreviewEndUpInTheSnapshot() async throws {
+        let dir = try makeFolder(dates: ["2024:01:01 10:00:00", "2024:01:01 11:00:00"])
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let doc = TimelineDocument()
+        doc.add([dir], undoManager: nil)
+        #expect(doc.photos.allSatisfy { doc.thumbnail(for: $0.id) == nil })
+
+        await doc.updatePreview(orientation: .horizontal)
+
+        #expect(doc.photos.allSatisfy { doc.thumbnail(for: $0.id) != nil })
+        let package = try doc.snapshot(contentType: .photoTimeline)
+        #expect(Set(package.thumbnails.keys) == Set(doc.photos.map(\.id)))
+        let preview = try #require(package.preview)
+        #expect(preview.starts(with: [0x89, 0x50, 0x4E, 0x47]), "PNG")
     }
 
     /// AppKit autosaves from a background queue — this used to trap.
@@ -122,7 +138,7 @@ struct TimelineDocumentTests {
         defer { try? FileManager.default.removeItem(at: dir) }
         let doc = TimelineDocument()
         doc.add([dir], undoManager: nil)
-        let count = try await Task.detached { try doc.snapshot(contentType: .photoTimeline).photos.count }.value
+        let count = try await Task.detached { try doc.snapshot(contentType: .photoTimeline).file.photos.count }.value
         #expect(count == 1)
     }
 }

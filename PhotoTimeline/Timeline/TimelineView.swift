@@ -80,8 +80,9 @@ struct TimelineView: View {
         let along = displayedAlong(of: placement)
         let url = document.url(for: photo)
 
-        return PhotoTile(photo: photo, url: url, size: layout.tileSize, isDragging: isDragging,
-                         isSelected: selection.contains(photo.id))
+        return PhotoTile(photo: photo, thumbnail: document.thumbnail(for: photo.id),
+                         load: { await document.loadThumbnail(for: photo) }, isMissing: url == nil,
+                         size: layout.tileSize, isDragging: isDragging, isSelected: selection.contains(photo.id))
             .overlay(alignment: .bottom) {
                 if isDragging {
                     Text(Self.format(newDate(for: photo, atAlong: along, layout: layout)))
@@ -169,7 +170,7 @@ struct TimelineView: View {
 }
 
 /// Axis line, ticks, exact-time dots and connectors for the visible slice.
-private struct AxisCanvas: View {
+struct AxisCanvas: View {
     let layout: TimelineLayout
     let rect: CGRect
     let placements: [TimelineLayout.Placement]

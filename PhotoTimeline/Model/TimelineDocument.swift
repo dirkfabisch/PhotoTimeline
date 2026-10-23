@@ -4,6 +4,8 @@ import UniformTypeIdentifiers
 
 extension UTType {
     nonisolated static let photoTimeline = UTType(exportedAs: "de.fabisch.phototimeline")
+    /// Single JSON file from before the package format; same extension, read only.
+    nonisolated static let photoTimelineJSON = UTType(exportedAs: "de.fabisch.phototimeline.json")
 }
 
 /// ReferenceFileDocument is Sendable, so the class itself can't be main-actor bound.
@@ -11,7 +13,8 @@ extension UTType {
 /// AppKit takes snapshots on a background queue while saving, so those read a
 /// lock-protected copy instead.
 final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
-    nonisolated static var readableContentTypes: [UTType] { [.photoTimeline] }
+    nonisolated static var readableContentTypes: [UTType] { [.photoTimeline, .photoTimelineJSON] }
+    nonisolated static var writableContentTypes: [UTType] { [.photoTimeline] }
 
     @Published var photos: [PhotoRef] {
         didSet { updateSaved() }
@@ -19,49 +22,80 @@ final class TimelineDocument: ReferenceFileDocument, @unchecked Sendable {
     @Published private(set) var granularity: DateGranularity {
         didSet { updateSaved() }
     }
-    private let saved: Mutex<FileFormat>
+    /// Also holds the thumbnails and the preview image, which change without an undo step.
+    private let saved: Mutex<TimelinePackage>
     let bookmarks = BookmarkStore()
+    /// Thumbnails decoded from `saved` or made from the originals.
+    @MainActor private var thumbnailImages: [UUID: CGImage] = [:]
+    @MainActor private var thumbnailTasks: [UUID: Task<CGImage?, Never>] = [:]
 
     init() {
         let granularity = DateGranularity.standard
-        saved = Mutex(FileFormat(photos: [], granularity: granularity))
+        saved = Mutex(TimelinePackage(file: .init(photos: [], granularity: granularity)))
         photos = []
         self.granularity = granularity
     }
 
     nonisolated init(configuration: ReadConfiguration) throws {
-        guard let data = configuration.file.regularFileContents else {
-            throw CocoaError(.fileReadCorruptFile)
-        }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        var file = try decoder.decode(FileFormat.self, from: data)
-        file.granularity = file.granularity ?? DateGranularity.standard
-        saved = Mutex(file)
-        _photos = Published(initialValue: file.photos)
-        _granularity = Published(initialValue: file.granularity ?? .all)
+        var package = try TimelinePackage(fileWrapper: configuration.file)
+        package.file.granularity = package.file.granularity ?? DateGranularity.standard
+        saved = Mutex(package)
+        _photos = Published(initialValue: package.file.photos)
+        _granularity = Published(initialValue: package.file.granularity ?? .all)
     }
 
-    nonisolated func snapshot(contentType: UTType) throws -> FileFormat {
+    nonisolated func snapshot(contentType: UTType) throws -> TimelinePackage {
         saved.withLock { $0 }
     }
 
-    nonisolated func fileWrapper(snapshot: FileFormat, configuration: WriteConfiguration) throws -> FileWrapper {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        encoder.dateEncodingStrategy = .iso8601
-        return FileWrapper(regularFileWithContents: try encoder.encode(snapshot))
-    }
-
-    nonisolated struct FileFormat: Codable, Sendable {
-        var version = 1
-        var photos: [PhotoRef]
-        /// Optional so files from before the setting existed still load.
-        var granularity: DateGranularity?
+    nonisolated func fileWrapper(snapshot: TimelinePackage, configuration: WriteConfiguration) throws -> FileWrapper {
+        try snapshot.fileWrapper()
     }
 
     private func updateSaved() {
-        saved.withLock { [photos, granularity] in $0 = FileFormat(photos: photos, granularity: granularity) }
+        saved.withLock { [photos, granularity] in $0.file = .init(photos: photos, granularity: granularity) }
+    }
+
+    // MARK: Thumbnails and preview
+
+    /// The stored thumbnail, if there is one. Synchronous, so tiles show it in their first frame.
+    @MainActor
+    func thumbnail(for id: UUID) -> CGImage? {
+        if let image = thumbnailImages[id] { return image }
+        guard let data = saved.withLock({ $0.thumbnails[id] }),
+              let image = ThumbnailCache.image(from: data) else { return nil }
+        thumbnailImages[id] = image
+        return image
+    }
+
+    /// The stored thumbnail, or a new one made from the original and kept in the document.
+    @MainActor
+    func loadThumbnail(for photo: PhotoRef) async -> CGImage? {
+        if let image = thumbnail(for: photo.id) { return image }
+        if let task = thumbnailTasks[photo.id] { return await task.value }
+        guard let url = url(for: photo) else { return nil }
+        let task = Task { await ThumbnailCache.shared.thumbnail(for: url, maxPixelSize: ThumbnailCache.tilePixelSize) }
+        thumbnailTasks[photo.id] = task
+        let image = await task.value
+        thumbnailTasks[photo.id] = nil
+        if let image, let data = ThumbnailCache.jpegData(image) {
+            thumbnailImages[photo.id] = image
+            saved.withLock { $0.thumbnails[photo.id] = data }
+        }
+        return image
+    }
+
+    /// Renders the image Quick Look and the Finder show, once every photo has a thumbnail.
+    @MainActor
+    func updatePreview(orientation: TimelineOrientation) async {
+        await withTaskGroup { group in
+            for photo in photos where thumbnail(for: photo.id) == nil {
+                group.addTask { _ = await self.loadThumbnail(for: photo) }
+            }
+        }
+        guard !Task.isCancelled else { return }
+        let preview = TimelinePreview.render(photos: photos, orientation: orientation, thumbnail: thumbnail(for:))
+        saved.withLock { $0.preview = preview }
     }
 
     // MARK: Access

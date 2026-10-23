@@ -2,12 +2,17 @@ import SwiftUI
 
 struct PhotoTile: View {
     let photo: PhotoRef
-    let url: URL?
+    /// Stored thumbnail, shown in the first frame.
+    let thumbnail: CGImage?
+    /// Makes the thumbnail when none is stored yet.
+    var load: (() async -> CGImage?)?
+    /// The original file can't be found.
+    var isMissing = false
     let size: CGFloat
     var isDragging = false
     var isSelected = false
 
-    @State private var image: CGImage?
+    @State private var loaded: CGImage?
 
     var body: some View {
         content
@@ -35,14 +40,14 @@ struct PhotoTile: View {
             .shadow(color: .black.opacity(isDragging ? 0.3 : 0.18),
                     radius: isDragging ? 18 : 2, y: isDragging ? 14 : 1)
             .animation(.spring(duration: 0.3, bounce: 0.25), value: isDragging)
-            .task(id: url) {
-                guard let url else { return }
-                image = await ThumbnailCache.shared.thumbnail(for: url, maxPixelSize: Int(TimelineLayout.maxTileSize * 2))
+            .task(id: photo.id) {
+                guard thumbnail == nil, let load else { return }
+                loaded = await load()
             }
     }
 
     @ViewBuilder private var content: some View {
-        if let image {
+        if let image = thumbnail ?? loaded {
             Image(decorative: image, scale: 1)
                 .resizable()
                 .scaledToFit()
@@ -51,7 +56,7 @@ struct PhotoTile: View {
             Rectangle()
                 .fill(.quaternary)
                 .overlay {
-                    Image(systemName: url == nil ? "exclamationmark.triangle" : "photo")
+                    Image(systemName: isMissing ? "exclamationmark.triangle" : "photo")
                         .font(.title2)
                         .foregroundStyle(.secondary)
                 }

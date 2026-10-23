@@ -23,6 +23,11 @@ struct ContentView: View {
 
     private let zoomRange: ClosedRange<Double> = -8...0
 
+    private struct PreviewInput: Equatable {
+        var photos: [PhotoRef]
+        var orientation: TimelineOrientation
+    }
+
     var body: some View {
         // Preview goes below a horizontal timeline and beside a vertical one.
         let stack = orientation == .horizontal ? AnyLayout(VStackLayout(spacing: 0)) : AnyLayout(HStackLayout(spacing: 0))
@@ -32,7 +37,7 @@ struct ContentView: View {
             timeline
             if !previews.isEmpty {
                 Divider()
-                PreviewPane(photos: previews, url: document.url(for:)) { togglePreview($0) }
+                PreviewPane(photos: previews, url: document.url(for:), thumbnail: { document.thumbnail(for: $0.id) }) { togglePreview($0) }
             }
         }
         .animation(.snappy(duration: 0.2), value: previewIDs)
@@ -140,6 +145,12 @@ struct ContentView: View {
                 }
             }
             .onChange(of: orientation) { fit() }
+            // Waits for a pause in editing; saving picks up the latest preview.
+            .task(id: PreviewInput(photos: document.photos, orientation: orientation)) {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled else { return }
+                await document.updatePreview(orientation: orientation)
+            }
     }
 
     @discardableResult

@@ -82,7 +82,7 @@ plist=$APP/Contents/Info.plist
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$plist")" == "$BUILD" ]] || { echo "Build im Bundle ≠ $BUILD" >&2; exit 1; }
 codesign --verify --deep --strict "$APP"
 # Capture first: grep -q would close the pipe early and pipefail would report codesign as failed.
-for item in "$APP" "$APP"/Contents/Frameworks/Sparkle.framework "$APP"/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/*.xpc; do
+for item in "$APP" "$APP"/Contents/PlugIns/*.appex "$APP"/Contents/Frameworks/Sparkle.framework "$APP"/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/*.xpc; do
   info=$(codesign -dvv "$item" 2>&1)
   [[ "$info" == *"Authority=Developer ID Application: "*"($TEAM_ID)"* && "$info" == *"Timestamp="* ]] \
     || { echo "Nicht mit Developer ID + Zeitstempel signiert: $item" >&2; exit 1; }
@@ -90,7 +90,7 @@ done
 [[ "$(lipo -archs "$APP/Contents/MacOS/Photo Timeline")" == "arm64" ]] || { echo "Nicht nur arm64" >&2; exit 1; }
 entitlements=$(codesign -d --entitlements - --xml "$APP" 2>/dev/null)
 [[ "$entitlements" != *get-task-allow* ]] || { echo "get-task-allow im Release" >&2; exit 1; }
-echo "  $VERSION ($BUILD), arm64, Developer ID, Sparkle-Dienste signiert"
+echo "  $VERSION ($BUILD), arm64, Developer ID, Sparkle-Dienste und Quick-Look-Extensions signiert"
 
 echo "→ Notarisieren (dauert meist 1–5 Minuten)"
 mkdir -p "$OUT"

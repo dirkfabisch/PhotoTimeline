@@ -13,9 +13,23 @@
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
+			<key>LSTypeIsPackage</key>
+			<true/>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>de.fabisch.phototimeline</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Photo Timeline (JSON)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>de.fabisch.phototimeline.json</string>
 			</array>
 		</dict>
 	</array>
@@ -50,12 +64,30 @@
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.json</string>
+				<string>com.apple.package</string>
+				<string>public.composite-content</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Photo Timeline</string>
 			<key>UTTypeIdentifier</key>
 			<string>de.fabisch.phototimeline</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>phototimeline</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.json</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Photo Timeline (JSON)</string>
+			<key>UTTypeIdentifier</key>
+			<string>de.fabisch.phototimeline.json</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
