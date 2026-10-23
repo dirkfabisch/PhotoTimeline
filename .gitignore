@@ -1,3 +1,18 @@
 build/
 xcuserdata/
 .DS_Store
+
+# Signing material and local release settings – never commit
+*.p12
+*.p8
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.provisionprofile
+.env
+*.env
+!*.env.example
+*.xcresult
+
+# Private working notes
+tasks/
